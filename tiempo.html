@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página con Contador</title>
+    <style>
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            background-color: #f9e1e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            
+        }
+        .container {
+            overflow-x: hidden;
+            background-color: #f1aab5;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+            max-height: 400px;
+            overflow: auto;
+            position: relative;
+            z-index: 10;
+        }
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .profile {
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-direction: row;
+        }
+        .photo {
+            overflow-x: hidden;
+            width: 80px;
+            height: 80px;
+            background: url('30.jpg') no-repeat center center;
+            background-size: cover;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .title {
+            font-style: italic;
+            color: #c94c61;
+            font-size: 14px;
+            text-align: center;
+        }
+        .counter {
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            font-size: 50px;
+            font-weight: bold;
+            gap: 10px;
+            margin: 20px 0;
+            background: rgba(255, 105, 135, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .counter span {
+            padding: 15px 20px;
+            background: #f0eaeb;
+            border-radius: 5px;
+            color: rgb(219, 120, 120);
+        }
+        .counter-labels {
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            gap: 90px;
+            font-size: 12px;
+            color: #c94c61;
+            margin-top: -9px;
+        }
+        .buttons {
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .buttons button:hover {
+            background-color: #ff4757;
+        }
+        .falling-leaves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .leaf {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('hoja.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from {
+                    transform: translateY(-100px) rotate(0deg);
+                }
+            to {
+                    transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-audio" loop>
+        <source src="amistad.mp3" type="audio/mp3">
+        Tu navegador no soporta el audio.
+    </audio>
+
+
+    <div class="falling-leaves" id="leaves-container"></div>
+    <div class="container">
+        <div class="close-button" onclick="location.href='index.html'">X</div>
+        <div class="profile">
+            <div class="photo"></div>
+            <div class="title">¿Acaso este no es el tiempo que tenemos como amigos? supongo.</div>
+        </div>
+        <div class="counter" id="countdown"></div>
+        <div class="counter-labels">
+            <span>Días</span>
+            <span>Horas</span>
+            <span>Minutos</span>
+            <span>Segundos</span>
+        </div>
+        <div class="buttons">
+            <button>Aqui no :)</button>
+            <a href="leeme.html" ><button>Leeme</button></a>
+            <a href="mirame.html" ><button>Mirame</button></a>
+        </div>
+    </div>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let audio = document.getElementById("background-audio");
+    
+            // Obtener la posición almacenada y aplicarla
+            let storedTime = localStorage.getItem("audioTime");
+            if (storedTime) {
+                audio.currentTime = parseFloat(storedTime);
+            }
+
+            // Reproducir automáticamente sin esperar clic
+            audio.play().catch(error => console.log("Reproducción automática bloqueada"));
+
+            // Guardar la posición del audio en tiempo real
+            setInterval(() => {
+                localStorage.setItem("audioTime", audio.currentTime);
+            }, 500);
+        });
+
+        // Permitir que se inicie al hacer clic si el navegador bloquea la reproducción automática
+        document.addEventListener("click", function () {
+            let audio = document.getElementById("background-audio");
+            if (audio.paused) {
+                audio.play();
+            }
+        });
+       
+        function updateCountdown() {
+            const startDate = new Date('July 20, 2021 00:00:00').getTime();
+            const now = new Date().getTime();
+            const diff = now - startDate;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countdown').innerHTML = `
+                <span>${days}</span> :
+                <span>${hours}</span> :
+                <span>${minutes}</span> :
+                <span>${seconds}</span>
+            `;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function createLeaf() {
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf');
+            leaf.style.left = Math.random() * window.innerWidth + 'px';
+            leaf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.getElementById('leaves-container').appendChild(leaf);
+            setTimeout(() => leaf.remove(), 5000);
+        }
+        setInterval(createLeaf, 300);
+    </script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta para Ruth</title>
+    <style>
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            background-color: #f9e1e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .container {
+            overflow-x: hidden;
+            background-color: #ffb6c1;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-height: 500px;
+            overflow: auto;
+            position: relative;
+        }
+        .close-button {
+            overflow-x: hidden;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .letter {
+            overflow-x: hidden;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            font-style: italic;
+            font-size: 14px;
+            width: 95%;
+            text-align: justify;
+        }
+
+        .falling-leaves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .leaf {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('hoja.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from {
+                    transform: translateY(-100px) rotate(0deg);
+            }
+            to {
+                    transform: translateY(100vh) rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-audio" loop>
+        <source src="amistad.mp3" type="audio/mp3">
+        Tu navegador no soporta el audio.
+    </audio>
+
+
+    <div class="falling-leaves" id="leaves-container"></div>
+    <div class="container">
+        <div class="close-button" onclick="location.href='tiempo.html'">X</div>
+        <div class="letter">
+            <p><strong>[14/02/2025]</strong></p>
+            <p>Querida Ruth,</p>
+            <p>¡Hola! Espero que lo que hice haya sido de tu agrado y reanime un poco tu ánimo de la lejanía que crees estar.
+            Me tomé mi tiempo para desarrollar esto, y lo he hecho con mucho gusto, esperando alegrarte el día.
+            Sé que has tenido y tienes momentos malos donde crees que estás sola, que la efímera vida tuya no le importa a nadie.
+            Comprendo si te has sentido así en algunos momentos, y quiero que sepas que estoy aquí, siempre mi amiga.
+            Tu vida es valiosa, no solo para mí, sino también para muchas otras personas que te quieren y se preocupan por ti.
+            Y por supuesto, para Dios, que te ama incondicionalmente y tiene un propósito maravilloso para tu vida.</p>
+            <p>Te escribo con el corazón lleno de amor y gratitud, movido por el deseo de compartir algunas reflexiones que puedan ser de utilidad
+            en tu caminar diario con nuestro Señor Jesucristo.
+            En primer lugar, que el Señor te bendiga y haga prosperar tu camino, y todo lo que tu corazón desea.
+            En segundo lugar, te animo a practicar y defender la justicia y la paz, manifestando la capacidad de escuchar
+            y comprender las necesidades de los demás, tanto física como espiritualmente. Jesús dedicó tiempo y atención a
+            quienes se acercaban a él, mostrándoles un interés genuino y ofreciéndoles consuelo, sanidad y esperanza.</p>
+            <p>En tercer lugar, te exhorto a mantenerte firme en la fe, a pesar de las dificultades y pruebas que puedan presentarse en tu camino.
+            La vida cristiana no está exenta de sufrimiento, pero la promesa de Jesús es clara: "Yo estoy contigo todos los días, hasta el fin del mundo" (Mateo 28:20).
+            Confía en su amor y en su poder, y no permitas que el desánimo o la desesperanza te aparten de su lado.</p>
+            <p>En cuarto lugar, te insto a vivir de acuerdo con los principios y valores del Evangelio. Esto implica ser honesta,
+            íntegra, justa y misericordiosa en todas tus acciones y palabras. No te conformes con una fe superficial o de apariencia,
+            sino esfuérzate por ser coherente entre lo que crees y lo que haces.</p>
+            <p>Finalmente, que el Señor te bendiga abundantemente.</p>
+            <p>Con cariño,</p>
+            <p>Yo p xd</p>
+        </div>
+    </div>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let audio = document.getElementById("background-audio");
+    
+            // Obtener la posición almacenada y aplicarla
+            let storedTime = localStorage.getItem("audioTime");
+            if (storedTime) {
+                audio.currentTime = parseFloat(storedTime);
+            }
+
+            // Reproducir automáticamente sin esperar clic
+            audio.play().catch(error => console.log("Reproducción automática bloqueada"));
+
+            // Guardar la posición del audio en tiempo real
+            setInterval(() => {
+                localStorage.setItem("audioTime", audio.currentTime);
+            }, 500);
+        });
+
+        // Permitir que se inicie al hacer clic si el navegador bloquea la reproducción automática
+        document.addEventListener("click", function () {
+            let audio = document.getElementById("background-audio");
+            if (audio.paused) {
+                audio.play();
+            }
+        });
+
+        function createLeaf() {
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf');
+            leaf.style.left = Math.random() * window.innerWidth + 'px';
+            leaf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.getElementById('leaves-container').appendChild(leaf);
+            setTimeout(() => leaf.remove(), 5000);
+        }
+        setInterval(createLeaf, 300);
+
+    </script>
+</body>
+</html>

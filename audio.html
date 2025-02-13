@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio</title>
+</head>
+<body>
+    <audio id="background-audio" autoplay loop>
+        <source src="amistad.mp3" type="audio/mp3">
+        Tu navegador no soporta el audio.
+    </audio>
+    
+    <script>
+    document.addEventListener("click", function () {
+        let audio = document.getElementById("background-audio");
+        if (audio.paused) {
+            audio.play();
+        }
+    });
+    </script>
+</body>
+</html>

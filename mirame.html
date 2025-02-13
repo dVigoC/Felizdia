@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Interactiva</title>
+    <style>
+        body {
+            background-color: #ffe6e6;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff66b2;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-decoration: none;
+            color: #ff66b2;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .image-container {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            margin: 20px auto;
+            touch-action: none;
+        }
+
+        #baseImage {
+            width: 100%;
+            display: block;
+        }
+
+        #scratchCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            touch-action: none;
+        }
+
+        .instruction {
+            color: #ff66b2;
+            margin: 10px 0;
+            text-align: center;
+	    font-size: 12px;
+        }
+
+        .size-controls {
+            margin: 20px 0;
+            color: #ff66b2;
+        }
+
+        .falling-leaves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .leaf {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: url('hoja.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from {
+                    transform: translateY(-100px) rotate(0deg);
+                }
+            to {
+                    transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .size-controls {
+                width: 90%;
+                margin: 20px auto;
+            }
+            
+            input[type="range"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="background-audio" loop>
+        <source src="amistad.mp3" type="audio/mp3">
+        Tu navegador no soporta el audio.
+    </audio>
+
+    <div class="falling-leaves" id="leaves-container"></div>
+    <a href="tiempo.html" class="close-button">X</a>
+    <h1>Veras algo muy bonito</h1>
+    
+    <div class="instruction">Presiona y desliza sobre el cuadro</div>
+    
+    <div class="size-controls">
+        <label>Tamaño de la imagen: </label>
+        <input type="range" id="sizeSlider" min="200" max="600" value="400">
+    </div>
+
+    <div class="image-container">
+        <img id="baseImage" src="raspa.jpeg" alt="Imagen base">
+        <canvas id="scratchCanvas"></canvas>
+    </div>
+
+    <script>
+        const baseImage = document.getElementById('baseImage');
+        const canvas = document.getElementById('scratchCanvas');
+        const ctx = canvas.getContext('2d');
+        const sizeSlider = document.getElementById('sizeSlider');
+        let isDrawing = false;
+
+        function initCanvas() {
+            canvas.width = baseImage.width;
+            canvas.height = baseImage.height;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        baseImage.onload = initCanvas;
+
+        function updateSize() {
+            const container = document.querySelector('.image-container');
+            const newWidth = sizeSlider.value;
+            container.style.width = Math.min(newWidth, window.innerWidth - 40) + 'px';
+            canvas.width = baseImage.width;
+            canvas.height = baseImage.height;
+            initCanvas();
+        }
+
+        sizeSlider.addEventListener('input', updateSize);
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            e.preventDefault();
+            
+            let x, y;
+            
+            if (e.type.includes('mouse')) {
+                const rect = canvas.getBoundingClientRect();
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            } else if (e.type.includes('touch')) {
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                x = touch.clientX - rect.left;
+                y = touch.clientY - rect.top;
+            }
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Eventos del mouse
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            draw(e);
+        });
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mouseleave', () => isDrawing = false);
+
+        // Eventos táctiles
+        canvas.addEventListener('touchstart', (e) => {
+            isDrawing = true;
+            draw(e);
+        }, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', () => isDrawing = false);
+        canvas.addEventListener('touchcancel', () => isDrawing = false);
+
+        // Ajustar tamaño inicial en móviles
+        if (window.innerWidth <= 768) {
+            sizeSlider.value = Math.min(400, window.innerWidth - 40);
+            updateSize();
+        }
+
+        function createLeaf() {
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf');
+            leaf.style.left = Math.random() * window.innerWidth + 'px';
+            leaf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.getElementById('leaves-container').appendChild(leaf);
+            setTimeout(() => leaf.remove(), 5000);
+        }
+        setInterval(createLeaf, 300);
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let audio = document.getElementById("background-audio");
+    
+            // Obtener la posición almacenada y aplicarla
+            let storedTime = localStorage.getItem("audioTime");
+            if (storedTime) {
+                audio.currentTime = parseFloat(storedTime);
+            }
+
+            // Reproducir automáticamente sin esperar clic
+            audio.play().catch(error => console.log("Reproducción automática bloqueada"));
+
+            // Guardar la posición del audio en tiempo real
+            setInterval(() => {
+                localStorage.setItem("audioTime", audio.currentTime);
+            }, 500);
+        });
+
+        // Permitir que se inicie al hacer clic si el navegador bloquea la reproducción automática
+        document.addEventListener("click", function () {
+            let audio = document.getElementById("background-audio");
+            if (audio.paused) {
+                audio.play();
+            }
+        });
+
+    </script>
+</body>
+</html>
